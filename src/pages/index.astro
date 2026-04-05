@@ -1,0 +1,625 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Crypto Yield Guide — Stop Leaving Yield on the Table"
+  description="Input your crypto holdings and see exactly how much more you could be earning. Personalized yield optimization for BTC, ETH, SOL, and more."
+>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0F1923;
+      --bg-card:   #162030;
+      --bg-input:  #1C2A3A;
+      --border:    #2A3F55;
+      --accent:    #4A90D9;
+      --accent-hov:#3A7BC8;
+      --green:     #22C55E;
+      --text:      #E8F0F8;
+      --text-muted:#7A9AB8;
+      --radius:    10px;
+      --font:      'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    html { font-family: var(--font); background: var(--bg); color: var(--text);
+           font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    body { min-height: 100vh; }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hov); }
+
+    /* ---- NAV ---- */
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px; max-width: 1100px; margin: 0 auto;
+    }
+    .logo { font-size: 1.25rem; font-weight: 800; color: var(--text);
+            display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 32px; height: 32px; background: var(--accent);
+                 border-radius: 8px; display: flex; align-items: center;
+                 justify-content: center; font-size: 1rem; }
+    .tagline-nav { font-size: 0.85rem; color: var(--text-muted); font-weight: 400; }
+
+    /* ---- HERO ---- */
+    .hero {
+      text-align: center; padding: 80px 24px 60px;
+      max-width: 780px; margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15;
+      margin-bottom: 20px; letter-spacing: -0.02em;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 520px;
+              margin: 0 auto 36px; }
+    .trust-badges { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+                    margin-bottom: 0; }
+    .badge { display: flex; align-items: center; gap: 7px; font-size: 0.82rem;
+             color: var(--text-muted); background: var(--bg-card);
+             border: 1px solid var(--border); border-radius: 20px;
+             padding: 6px 14px; }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+
+    /* ---- MAIN WRAPPER ---- */
+    .main { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ---- INPUT SECTION ---- */
+    .section-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+    }
+
+    .coin-row {
+      display: grid; grid-template-columns: 1fr 120px 1fr auto;
+      gap: 12px; align-items: end; margin-bottom: 14px;
+    }
+    @media (max-width: 600px) {
+      .coin-row { grid-template-columns: 1fr 1fr; }
+      .coin-row .strategy-col { grid-column: 1 / -1; }
+      .coin-row .remove-btn { grid-column: 1 / -1; justify-self: end; }
+    }
+
+    .field label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.03em;
+    }
+    .field select, .field input {
+      width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text); font-family: var(--font);
+      font-size: 0.95rem; padding: 10px 14px; outline: none;
+      transition: border-color 0.2s;
+      appearance: none; -webkit-appearance: none;
+    }
+    .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A9AB8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      padding-right: 36px; cursor: pointer; }
+    .field select:focus, .field input:focus { border-color: var(--accent); }
+    .field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .remove-btn {
+      background: transparent; border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text-muted); cursor: pointer; padding: 10px 14px; font-size: 1.1rem;
+      transition: all 0.2s; line-height: 1;
+    }
+    .remove-btn:hover { border-color: #D94444; color: #D94444; }
+
+    .btn-add {
+      background: transparent; border: 1px dashed var(--border); border-radius: var(--radius);
+      color: var(--text-muted); cursor: pointer; padding: 10px 18px; font-size: 0.9rem;
+      font-family: var(--font); font-weight: 500; transition: all 0.2s;
+      display: flex; align-items: center; gap: 7px; margin-bottom: 24px;
+    }
+    .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-optimize {
+      width: 100%; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius); padding: 16px;
+      font-size: 1.05rem; font-weight: 700; font-family: var(--font);
+      cursor: pointer; transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .btn-optimize:hover { background: var(--accent-hov); }
+    .btn-optimize:active { transform: scale(0.99); }
+    .btn-optimize:disabled { opacity: 0.6; cursor: wait; }
+
+    /* ---- RESULTS ---- */
+    #results { display: none; margin-top: 36px; }
+
+    .totals-bar {
+      background: linear-gradient(135deg, #162030 0%, #1a2e45 100%);
+      border: 1px solid var(--accent); border-radius: 16px;
+      padding: 28px; margin-bottom: 28px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+      text-align: center;
+    }
+    @media (max-width: 560px) { .totals-bar { grid-template-columns: 1fr; } }
+    .total-item .t-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600;
+                           letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+    .total-item .t-value { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+    .t-value.now  { color: var(--text-muted); }
+    .t-value.opt  { color: var(--green); }
+    .t-value.diff { color: var(--accent); }
+
+    .coin-result {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px 24px; margin-bottom: 14px;
+    }
+    .cr-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .cr-coin-name { font-size: 1.05rem; font-weight: 700; }
+    .cr-amount { font-size: 0.85rem; color: var(--text-muted); }
+    .cr-badge { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+                text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .cr-badge.upgrade  { background: rgba(34,197,94,0.15);  color: var(--green); }
+    .cr-badge.optimized{ background: rgba(74,144,217,0.15); color: var(--accent); }
+
+    .cr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    @media (max-width: 500px) { .cr-grid { grid-template-columns: 1fr; } }
+
+    .cr-box { background: var(--bg-input); border-radius: 10px; padding: 14px 16px; }
+    .cr-box-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600;
+                    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+    .cr-strategy { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
+    .cr-apy { font-size: 1.1rem; font-weight: 700; }
+    .cr-annual { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+    .cr-apy.current { color: var(--text-muted); }
+    .cr-apy.optimized { color: var(--green); }
+
+    .cr-extra {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.2);
+      border-radius: 10px; padding: 12px 16px;
+    }
+    .cr-extra-left { font-size: 0.85rem; color: var(--text-muted); }
+    .cr-extra-right { font-size: 1.1rem; font-weight: 800; color: var(--green); }
+
+    .cr-footer { display: flex; align-items: center; justify-content: space-between;
+                 margin-top: 12px; gap: 12px; flex-wrap: wrap; }
+    .cr-risk { font-size: 0.82rem; color: var(--text-muted); }
+    .cr-risk span { color: #F59E0B; }
+    .cr-note { font-size: 0.82rem; color: var(--text-muted); font-style: italic; flex: 1; text-align: right; }
+
+    /* ---- EMAIL CAPTURE ---- */
+    #email-section { display: none; margin-top: 36px; }
+    .email-card {
+      background: linear-gradient(135deg, #162030 0%, #1a2e45 100%);
+      border: 1px solid var(--border); border-radius: 16px; padding: 36px;
+      text-align: center;
+    }
+    .email-card h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+    .email-card p  { color: var(--text-muted); margin-bottom: 24px; }
+    .email-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+    .email-form input {
+      flex: 1; min-width: 220px; background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text); font-family: var(--font);
+      font-size: 0.95rem; padding: 12px 16px; outline: none;
+    }
+    .email-form input:focus { border-color: var(--accent); }
+    .btn-subscribe {
+      background: var(--accent); color: #fff; border: none; border-radius: var(--radius);
+      padding: 12px 22px; font-size: 0.95rem; font-weight: 700; font-family: var(--font);
+      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-subscribe:hover { background: var(--accent-hov); }
+    .sub-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 12px; }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border); padding: 28px 24px;
+      text-align: center; font-size: 0.82rem; color: var(--text-muted);
+      max-width: 1100px; margin: 0 auto; line-height: 1.8;
+    }
+
+    /* ---- LOADING SPINNER ---- */
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg { color: #F87171; font-size: 0.9rem; margin-top: 12px; text-align: center; }
+  </style>
+
+  <!-- NAV -->
+  <header>
+    <nav class="nav">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <div>
+          <div>Crypto Yield Guide</div>
+          <div class="tagline-nav">Stop leaving yield on the table</div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Your crypto is earning<br/><span>less than it should.</span></h1>
+    <p>Input your holdings. See exactly how much more you could earn with smarter yield strategies.</p>
+    <div class="trust-badges">
+      <span class="badge"><span class="badge-dot"></span>Live prices via CoinGecko</span>
+      <span class="badge"><span class="badge-dot"></span>No wallet connection needed</span>
+      <span class="badge"><span class="badge-dot"></span>100% client-side</span>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- INPUT CARD -->
+    <div class="section-label">Your Portfolio</div>
+    <div class="card">
+      <div id="coin-rows"></div>
+
+      <button class="btn-add" id="btn-add-coin" type="button">
+        <span>＋</span> Add another coin
+      </button>
+
+      <button class="btn-optimize" id="btn-optimize" type="button">
+        Optimize My Yield
+      </button>
+      <div class="error-msg" id="error-msg" style="display:none;"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results">
+      <div class="section-label">Your Yield Analysis</div>
+
+      <div class="totals-bar" id="totals-bar">
+        <div class="total-item">
+          <div class="t-label">Currently Earning</div>
+          <div class="t-value now" id="t-now">—</div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Optimized Potential</div>
+          <div class="t-value opt" id="t-opt">—</div>
+        </div>
+        <div class="total-item">
+          <div class="t-label">Extra Per Year</div>
+          <div class="t-value diff" id="t-diff">—</div>
+        </div>
+      </div>
+
+      <div id="coin-results"></div>
+    </div>
+
+    <!-- EMAIL CAPTURE -->
+    <div id="email-section">
+      <div class="email-card">
+        <h3>Get weekly personalized yield updates</h3>
+        <p>We'll track rate changes and alert you when better opportunities open up for your holdings.</p>
+        <form class="email-form" id="beehiiv-form" action="https://embeds.beehiiv.com/subscribe" method="post" target="_blank">
+          <input type="email" name="email" placeholder="your@email.com" required />
+          <button class="btn-subscribe" type="submit">Subscribe Free</button>
+        </form>
+        <div class="sub-note">No spam. Unsubscribe any time.</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Not financial advice. Yields fluctuate and past performance does not guarantee future results. DYOR.</p>
+    <p>More passive income tools at <a href="https://passiveyieldlab.com" target="_blank" rel="noopener">passiveyieldlab.com</a></p>
+  </footer>
+
+  <script>
+    // =============================================
+    //  YIELD DATA
+    // =============================================
+    const YIELD_DATA = {
+      BTC: {
+        name: "Bitcoin", coingecko: "bitcoin",
+        strategies: {
+          "not-staking":      { label: "Not staking",      apy: 0,    apyDisplay: "0%",    risk: 1 },
+          "native-staking":   { label: "Not applicable",   apy: 0,    apyDisplay: "N/A",   risk: 1 },
+          "liquid-staking":   { label: "Babylon staking",  apy: 3,    apyDisplay: "2–4%",  risk: 2 },
+          "defi-lp":          { label: "Wrapped + DeFi",   apy: 4,    apyDisplay: "3–5%",  risk: 3 },
+        },
+        best: "defi-lp",
+        note: "Babylon Protocol enables native BTC yield without wrapping; wrapped BTC in DeFi adds smart-contract risk.",
+      },
+      ETH: {
+        name: "Ethereum", coingecko: "ethereum",
+        strategies: {
+          "not-staking":      { label: "Not staking",          apy: 0,    apyDisplay: "0%",    risk: 1 },
+          "native-staking":   { label: "Native staking",       apy: 3.3,  apyDisplay: "3.3%",  risk: 2 },
+          "liquid-staking":   { label: "Lido (stETH)",         apy: 3.5,  apyDisplay: "3.5%",  risk: 2 },
+          "defi-lp":          { label: "Lido + EigenLayer",    apy: 6,    apyDisplay: "5–7%",  risk: 4 },
+        },
+        best: "defi-lp",
+        note: "EigenLayer restaking multiplies yield but adds slashing risk from multiple AVS operators.",
+      },
+      SOL: {
+        name: "Solana", coingecko: "solana",
+        strategies: {
+          "not-staking":      { label: "Not staking",       apy: 0,    apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "Native staking",    apy: 6.5,  apyDisplay: "6.5%",   risk: 2 },
+          "liquid-staking":   { label: "Jito LST",          apy: 7.75, apyDisplay: "7.5–8%", risk: 2 },
+          "defi-lp":          { label: "Marinade + DeFi",   apy: 10.5, apyDisplay: "9–12%",  risk: 4 },
+        },
+        best: "defi-lp",
+        note: "Marinade's mSOL in Solana DeFi protocols captures MEV tips on top of base staking yield.",
+      },
+      ADA: {
+        name: "Cardano", coingecko: "cardano",
+        strategies: {
+          "not-staking":      { label: "Not staking",    apy: 0,   apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "Native staking", apy: 3.5, apyDisplay: "3.5%",   risk: 2 },
+          "liquid-staking":   { label: "Minswap LP",     apy: 8,   apyDisplay: "6–10%",  risk: 4 },
+          "defi-lp":          { label: "Minswap LP",     apy: 8,   apyDisplay: "6–10%",  risk: 4 },
+        },
+        best: "liquid-staking",
+        note: "ADA native staking is non-custodial with no lock-up; Minswap LP adds impermanent loss risk.",
+      },
+      DOT: {
+        name: "Polkadot", coingecko: "polkadot",
+        strategies: {
+          "not-staking":      { label: "Not staking",          apy: 0,    apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "Native staking",       apy: 12,   apyDisplay: "12%",    risk: 2 },
+          "liquid-staking":   { label: "Bifrost liquid DOT",   apy: 14,   apyDisplay: "13–15%", risk: 3 },
+          "defi-lp":          { label: "Bifrost liquid DOT",   apy: 14,   apyDisplay: "13–15%", risk: 3 },
+        },
+        best: "liquid-staking",
+        note: "Bifrost vDOT keeps liquidity while earning staking rewards — avoids DOT's 28-day unbonding period.",
+      },
+      BNB: {
+        name: "BNB", coingecko: "binancecoin",
+        strategies: {
+          "not-staking":      { label: "Not staking",   apy: 0,   apyDisplay: "0%",   risk: 1 },
+          "native-staking":   { label: "BNB staking",   apy: 2,   apyDisplay: "2%",   risk: 2 },
+          "liquid-staking":   { label: "Venus lending", apy: 4,   apyDisplay: "3–5%", risk: 3 },
+          "defi-lp":          { label: "Venus lending", apy: 4,   apyDisplay: "3–5%", risk: 3 },
+        },
+        best: "liquid-staking",
+        note: "Venus Protocol on BNB Chain offers variable supply APY; rates move with market borrowing demand.",
+      },
+      AVAX: {
+        name: "Avalanche", coingecko: "avalanche-2",
+        strategies: {
+          "not-staking":      { label: "Not staking",     apy: 0,    apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "Native staking",  apy: 8,    apyDisplay: "8%",     risk: 2 },
+          "liquid-staking":   { label: "Benqi (sAVAX)",   apy: 10.5, apyDisplay: "9–12%",  risk: 3 },
+          "defi-lp":          { label: "Benqi (sAVAX)",   apy: 10.5, apyDisplay: "9–12%",  risk: 3 },
+        },
+        best: "liquid-staking",
+        note: "Benqi's sAVAX auto-compounds staking rewards and can be used as collateral in DeFi.",
+      },
+      LINK: {
+        name: "Chainlink", coingecko: "chainlink",
+        strategies: {
+          "not-staking":      { label: "Not staking",  apy: 0,   apyDisplay: "0%",   risk: 1 },
+          "native-staking":   { label: "LINK staking", apy: 4.5, apyDisplay: "4.5%", risk: 2 },
+          "liquid-staking":   { label: "Aave supply",  apy: 3,   apyDisplay: "2–4%", risk: 2 },
+          "defi-lp":          { label: "Aave supply",  apy: 3,   apyDisplay: "2–4%", risk: 2 },
+        },
+        best: "native-staking",
+        note: "Chainlink's native staking v0.2 is the safest yield source; Aave supply rates are variable.",
+      },
+      SUI: {
+        name: "Sui", coingecko: "sui",
+        strategies: {
+          "not-staking":      { label: "Not staking",   apy: 0,   apyDisplay: "0%",   risk: 1 },
+          "native-staking":   { label: "Native staking",apy: 3,   apyDisplay: "3%",   risk: 2 },
+          "liquid-staking":   { label: "DeFi strategies",apy: 6.5, apyDisplay: "5–8%",risk: 4 },
+          "defi-lp":          { label: "DeFi strategies",apy: 6.5, apyDisplay: "5–8%",risk: 4 },
+        },
+        best: "defi-lp",
+        note: "Sui DeFi is rapidly maturing; Cetus and Turbos offer higher yields with liquidity provider risk.",
+      },
+      RAY: {
+        name: "Raydium", coingecko: "raydium",
+        strategies: {
+          "not-staking":      { label: "Not staking",   apy: 0,    apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "RAY staking",   apy: 5,    apyDisplay: "5%",     risk: 2 },
+          "liquid-staking":   { label: "Raydium LP",    apy: 22.5, apyDisplay: "15–30%", risk: 5 },
+          "defi-lp":          { label: "Raydium LP",    apy: 22.5, apyDisplay: "15–30%", risk: 5 },
+        },
+        best: "defi-lp",
+        note: "Raydium LPs earn trading fees + RAY incentives but carry high impermanent loss risk in volatile markets.",
+      },
+    };
+
+    const COINS = Object.keys(YIELD_DATA);
+    const STRATEGY_LABELS = {
+      "not-staking":    "Not staking",
+      "native-staking": "Native staking",
+      "liquid-staking": "Liquid staking",
+      "defi-lp":        "DeFi LP",
+    };
+
+    function riskStars(n) {
+      return '★'.repeat(n) + '☆'.repeat(5 - n);
+    }
+
+    function fmt(n) {
+      if (n >= 1000) return '$' + (n / 1000).toFixed(1) + 'k';
+      return '$' + n.toFixed(0);
+    }
+
+    // =============================================
+    //  BUILD COIN ROWS
+    // =============================================
+    let rowCount = 0;
+
+    function coinOptions(selected = '') {
+      return COINS.map(c =>
+        `<option value="${c}" ${c === selected ? 'selected' : ''}>${c} — ${YIELD_DATA[c].name}</option>`
+      ).join('');
+    }
+
+    function strategyOptions(selected = 'not-staking') {
+      return Object.entries(STRATEGY_LABELS).map(([v, l]) =>
+        `<option value="${v}" ${v === selected ? 'selected' : ''}>${l}</option>`
+      ).join('');
+    }
+
+    function addRow(coin = '', amount = '', strategy = 'not-staking') {
+      if (rowCount >= 10) return;
+      const id = ++rowCount;
+      const defaultCoin = coin || COINS[(id - 1) % COINS.length];
+      const row = document.createElement('div');
+      row.className = 'coin-row';
+      row.dataset.rowId = id;
+      row.innerHTML = `
+        <div class="field">
+          ${id === 1 ? '<label>Coin</label>' : ''}
+          <select class="sel-coin">${coinOptions(defaultCoin)}</select>
+        </div>
+        <div class="field">
+          ${id === 1 ? '<label>Amount</label>' : ''}
+          <input type="number" class="inp-amount" min="0" step="any"
+                 placeholder="0.00" value="${amount}" />
+        </div>
+        <div class="field strategy-col">
+          ${id === 1 ? '<label>Current Strategy</label>' : ''}
+          <select class="sel-strategy">${strategyOptions(strategy)}</select>
+        </div>
+        <button class="remove-btn" type="button" title="Remove" style="${id === 1 ? 'margin-top:22px' : ''}">✕</button>
+      `;
+      row.querySelector('.remove-btn').addEventListener('click', () => {
+        row.remove();
+        updateAddButton();
+      });
+      document.getElementById('coin-rows').appendChild(row);
+      updateAddButton();
+    }
+
+    function updateAddButton() {
+      const rows = document.querySelectorAll('.coin-row').length;
+      const btn = document.getElementById('btn-add-coin');
+      btn.style.display = rows >= 10 ? 'none' : 'flex';
+    }
+
+    document.getElementById('btn-add-coin').addEventListener('click', () => addRow());
+    addRow(); // start with one row
+
+    // =============================================
+    //  OPTIMIZE
+    // =============================================
+    document.getElementById('btn-optimize').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-optimize');
+      const errEl = document.getElementById('error-msg');
+      errEl.style.display = 'none';
+
+      // Gather rows
+      const rows = [...document.querySelectorAll('.coin-row')];
+      const holdings = rows.map(r => ({
+        coin:     r.querySelector('.sel-coin').value,
+        amount:   parseFloat(r.querySelector('.inp-amount').value) || 0,
+        strategy: r.querySelector('.sel-strategy').value,
+      })).filter(h => h.amount > 0);
+
+      if (holdings.length === 0) {
+        errEl.textContent = 'Please enter at least one holding with an amount greater than 0.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Fetching live prices…';
+
+      // Fetch prices
+      const coinIds = [...new Set(holdings.map(h => YIELD_DATA[h.coin].coingecko))].join(',');
+      let prices = {};
+      try {
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd`,
+          { signal: AbortSignal.timeout(8000) }
+        );
+        if (!res.ok) throw new Error('CoinGecko API error');
+        const data = await res.json();
+        for (const [coin, info] of Object.entries(YIELD_DATA)) {
+          if (data[info.coingecko]) prices[coin] = data[info.coingecko].usd;
+        }
+      } catch (e) {
+        // Fallback prices (rough estimates — shown with disclaimer)
+        prices = { BTC:97000, ETH:3400, SOL:185, ADA:0.85, DOT:9.5, BNB:680, AVAX:38, LINK:18, SUI:3.8, RAY:2.8 };
+        errEl.textContent = '⚠ Could not fetch live prices — using approximate values. Refresh to retry.';
+        errEl.style.display = 'block';
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = 'Optimize My Yield';
+
+      // Calculate results
+      let totalNow = 0, totalOpt = 0;
+      const coinResultsEl = document.getElementById('coin-results');
+      coinResultsEl.innerHTML = '';
+
+      for (const h of holdings) {
+        const yieldInfo   = YIELD_DATA[h.coin];
+        const price       = prices[h.coin] || 0;
+        const usdValue    = h.amount * price;
+        const curStrat    = yieldInfo.strategies[h.strategy];
+        const bestStratKey= yieldInfo.best;
+        const bestStrat   = yieldInfo.strategies[bestStratKey];
+
+        const curAnnual   = usdValue * (curStrat.apy  / 100);
+        const bestAnnual  = usdValue * (bestStrat.apy / 100);
+        const extra       = bestAnnual - curAnnual;
+
+        totalNow += curAnnual;
+        totalOpt += bestAnnual;
+
+        const isAlreadyBest = h.strategy === bestStratKey;
+        const badgeClass    = isAlreadyBest ? 'optimized' : 'upgrade';
+        const badgeText     = isAlreadyBest ? 'Already optimized' : 'Upgrade available';
+
+        const card = document.createElement('div');
+        card.className = 'coin-result';
+        card.innerHTML = `
+          <div class="cr-header">
+            <div class="cr-coin-name">${h.coin} — ${yieldInfo.name}</div>
+            <div class="cr-amount">${h.amount.toLocaleString(undefined, {maximumFractionDigits: 6})} ${h.coin} ≈ ${fmt(usdValue)}</div>
+            <div class="cr-badge ${badgeClass}">${badgeText}</div>
+          </div>
+          <div class="cr-grid">
+            <div class="cr-box">
+              <div class="cr-box-label">Current</div>
+              <div class="cr-strategy">${curStrat.label}</div>
+              <div class="cr-apy current">${curStrat.apyDisplay} APY</div>
+              <div class="cr-annual">${fmt(curAnnual)}/year</div>
+            </div>
+            <div class="cr-box">
+              <div class="cr-box-label">Recommended</div>
+              <div class="cr-strategy">${bestStrat.label}</div>
+              <div class="cr-apy optimized">${bestStrat.apyDisplay} APY</div>
+              <div class="cr-annual">${fmt(bestAnnual)}/year</div>
+            </div>
+          </div>
+          ${extra > 0 ? `
+          <div class="cr-extra">
+            <div class="cr-extra-left">Extra yield per year</div>
+            <div class="cr-extra-right">+${fmt(extra)}/yr</div>
+          </div>` : ''}
+          <div class="cr-footer">
+            <div class="cr-risk">Risk: <span>${riskStars(bestStrat.risk)}</span> (${bestStrat.risk}/5)</div>
+            <div class="cr-note">${yieldInfo.note}</div>
+          </div>
+        `;
+        coinResultsEl.appendChild(card);
+      }
+
+      // Update totals
+      const diff = totalOpt - totalNow;
+      document.getElementById('t-now').textContent  = fmt(totalNow) + '/yr';
+      document.getElementById('t-opt').textContent  = fmt(totalOpt) + '/yr';
+      document.getElementById('t-diff').textContent = '+' + fmt(diff) + '/yr';
+
+      // Show sections
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('email-section').style.display = 'block';
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  </script>
+</BaseLayout>
