@@ -62,6 +62,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
              padding: 6px 14px; }
     .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 
+    .loss-hook {
+      background: rgba(248, 113, 113, 0.08); border: 1px solid rgba(248, 113, 113, 0.2);
+      border-radius: 10px; padding: 12px 18px; margin: 20px auto 28px;
+      max-width: 580px;
+    }
+    .loss-example { font-size: 0.88rem; color: #F8A4A4; line-height: 1.6; }
+    .loss-example strong { color: #F87171; }
+
     /* ---- MAIN WRAPPER ---- */
     .main { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
 
@@ -240,14 +248,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </nav>
   </header>
 
-  <!-- HERO -->
+  <!-- HERO — Octalysis #8 Loss & Avoidance + #1 Epic Meaning -->
   <section class="hero">
     <h1>Your crypto is earning<br/><span>less than it should.</span></h1>
-    <p>Input your holdings. See exactly how much more you could earn with smarter yield strategies.</p>
+    <p>Every day you don't optimize, you're leaving money on the table. See exactly how much you're missing — in 30 seconds.</p>
+    <div class="loss-hook">
+      <span class="loss-example">Example: 18 ETH on Lido at 3.5% = $1,291/yr. With EigenLayer restaking = $2,215/yr. <strong>You're missing $924/yr.</strong></span>
+    </div>
     <div class="trust-badges">
       <span class="badge"><span class="badge-dot"></span>Live prices via CoinGecko</span>
       <span class="badge"><span class="badge-dot"></span>No wallet connection needed</span>
-      <span class="badge"><span class="badge-dot"></span>100% client-side</span>
+      <span class="badge"><span class="badge-dot"></span>Your data never leaves your browser</span>
     </div>
   </section>
 
@@ -291,11 +302,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div id="coin-results"></div>
     </div>
 
-    <!-- EMAIL CAPTURE -->
+    <!-- Octalysis #2 Accomplishment — Progress indicator -->
+    <div id="progress-section" style="display:none; margin-top: 24px;">
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <span style="font-size: 0.9rem; color: var(--text-muted);">Your optimization score:</span>
+        <span id="opt-score" style="font-size: 1.3rem; font-weight: 800; color: var(--green);"></span>
+        <span style="font-size: 0.82rem; color: var(--text-muted);">Share your score on X and help others optimize too.</span>
+      </div>
+    </div>
+
+    <!-- EMAIL CAPTURE — Octalysis #6 Scarcity -->
     <div id="email-section">
       <div class="email-card">
-        <h3>Get weekly personalized yield updates</h3>
-        <p>We'll track rate changes and alert you when better opportunities open up for your holdings.</p>
+        <h3>Rates change weekly. Don't miss the next move.</h3>
+        <p>Get personalized yield alerts when better opportunities open up for your specific holdings.</p>
         <form class="email-form" id="beehiiv-form" action="https://embeds.beehiiv.com/subscribe" method="post" target="_blank">
           <input type="email" name="email" placeholder="your@email.com" required />
           <button class="btn-subscribe" type="submit">Subscribe Free</button>
@@ -619,6 +639,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       // Show sections
       document.getElementById('results').style.display = 'block';
       document.getElementById('email-section').style.display = 'block';
+
+      // Octalysis #2: Optimization score
+      const optPct = totalNow > 0 ? Math.round(((totalOpt - totalNow) / totalNow) * 100) : 0;
+      const scoreEl = document.getElementById('opt-score');
+      scoreEl.textContent = `+${optPct}% yield improvement possible`;
+      document.getElementById('progress-section').style.display = 'block';
+
       document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   </script>
