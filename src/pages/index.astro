@@ -191,6 +191,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .cr-risk { font-size: 0.82rem; color: var(--text-muted); }
     .cr-risk span { color: #F59E0B; }
     .cr-note { font-size: 0.82rem; color: var(--text-muted); font-style: italic; flex: 1; text-align: right; }
+    .cr-disclaimer { font-size: 0.78rem; color: var(--text-muted); margin-top: 8px;
+                     font-style: italic; padding-top: 8px; border-top: 1px solid var(--border); }
+    .cr-affiliate { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .btn-affiliate {
+      display: inline-block; font-size: 0.8rem; font-weight: 600; padding: 6px 14px;
+      border-radius: 20px; background: rgba(74,144,217,0.15); color: var(--accent);
+      border: 1px solid rgba(74,144,217,0.3); text-decoration: none; transition: all 0.2s;
+    }
+    .btn-affiliate:hover { background: var(--accent); color: #fff; }
+    .apy-updated { font-size: 0.72rem; color: var(--text-muted); margin-left: 6px; font-weight: 400; }
+    .saved-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; text-align: center; }
 
     /* ---- EMAIL CAPTURE ---- */
     #email-section { display: none; margin-top: 36px; }
@@ -278,6 +289,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         Optimize My Yield
       </button>
       <div class="error-msg" id="error-msg" style="display:none;"></div>
+      <div class="saved-note">Your portfolio is saved locally in your browser.</div>
     </div>
 
     <!-- RESULTS -->
@@ -347,7 +359,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   <script>
     // =============================================
-    //  YIELD DATA
+    //  AFFILIATE LINKS (Issue 6)
+    // =============================================
+    const AFFILIATE = {
+      "Binance":    "https://www.binance.com/en/register?ref=725285686",
+      "Bybit":      "https://www.bybit.com/invite?ref=WKNA1V",
+      "OKX":        "https://www.okx.com/join/26575603",
+      "CoinLedger": "https://coinledger.io?fpr=4bsqmx",
+    };
+
+    // =============================================
+    //  YIELD DATA (Issues 1, 2, 3, 4, 6)
     // =============================================
     const YIELD_DATA = {
       BTC: {
@@ -359,7 +381,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Wrapped + DeFi",   apy: 4,    apyDisplay: "3–5%",  risk: 3 },
         },
         best: "defi-lp",
-        note: "Babylon Protocol enables native BTC yield without wrapping; wrapped BTC in DeFi adds smart-contract risk.",
+        note: "Babylon Protocol enables native BTC yield without wrapping; wrapped BTC in DeFi adds smart-contract risk. Worst case: bridge or smart contract exploit = 100% loss of wrapped BTC. Historical exploits on wrapped BTC bridges: multiple (Ronin, Wormhole). <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "Bybit",   url: AFFILIATE["Bybit"] },
+        ],
       },
       ETH: {
         name: "Ethereum", coingecko: "ethereum",
@@ -370,7 +396,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Lido + EigenLayer",    apy: 6,    apyDisplay: "5–7%",  risk: 4 },
         },
         best: "defi-lp",
-        note: "EigenLayer restaking multiplies yield but adds slashing risk from multiple AVS operators.",
+        note: "EigenLayer restaking multiplies yield but adds slashing risk from multiple AVS operators. Worst case: smart contract hack = 100% loss of staked ETH. Historical incidents: 0 on EigenLayer (as of April 2026). <a href='https://passiveyieldlab.com/blog/eigenlayer-restaking-guide-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Lido Finance",  url: "https://lido.fi" },
+          { name: "EigenLayer",    url: "https://eigenlayer.xyz" },
+        ],
       },
       SOL: {
         name: "Solana", coingecko: "solana",
@@ -381,7 +411,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Marinade + DeFi",   apy: 10.5, apyDisplay: "9–12%",  risk: 4 },
         },
         best: "defi-lp",
-        note: "Marinade's mSOL in Solana DeFi protocols captures MEV tips on top of base staking yield.",
+        note: "Marinade's mSOL in Solana DeFi protocols captures MEV tips on top of base staking yield. Worst case: Solana network halt or DeFi protocol exploit = temporary loss of access or partial fund loss. Historical: Solana has had multiple outages. <a href='https://passiveyieldlab.com/blog/how-to-stake-sol-marinade-finance' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Marinade Finance", url: "https://marinade.finance" },
+          { name: "Bybit",            url: AFFILIATE["Bybit"] },
+        ],
       },
       ADA: {
         name: "Cardano", coingecko: "cardano",
@@ -392,7 +426,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Minswap LP",     apy: 8,   apyDisplay: "6–10%",  risk: 4 },
         },
         best: "liquid-staking",
-        note: "ADA native staking is non-custodial with no lock-up; Minswap LP adds impermanent loss risk.",
+        note: "ADA native staking is non-custodial with no lock-up; Minswap LP adds impermanent loss risk. Worst case: LP token depeg or hack = up to 50% loss of LP position. Historical DeFi incidents on Cardano: low but Minswap had UI exploits. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "OKX",     url: AFFILIATE["OKX"] },
+        ],
       },
       DOT: {
         name: "Polkadot", coingecko: "polkadot",
@@ -403,7 +441,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Bifrost liquid DOT",   apy: 14,   apyDisplay: "13–15%", risk: 3 },
         },
         best: "liquid-staking",
-        note: "Bifrost vDOT keeps liquidity while earning staking rewards — avoids DOT's 28-day unbonding period.",
+        note: "Bifrost vDOT keeps liquidity while earning staking rewards — avoids DOT's 28-day unbonding period. Worst case: Bifrost protocol exploit = loss of liquid staking tokens. Native staking worst case: slashing for validator misbehavior (rare). <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "Bybit",   url: AFFILIATE["Bybit"] },
+        ],
       },
       BNB: {
         name: "BNB", coingecko: "binancecoin",
@@ -414,7 +456,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Venus lending", apy: 4,   apyDisplay: "3–5%", risk: 3 },
         },
         best: "liquid-staking",
-        note: "Venus Protocol on BNB Chain offers variable supply APY; rates move with market borrowing demand.",
+        note: "Venus Protocol on BNB Chain offers variable supply APY; rates move with market borrowing demand. Worst case: Venus oracle manipulation or BNB Chain halt = bad debt positions (Venus had a $100M exploit in 2022). <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+        ],
       },
       AVAX: {
         name: "Avalanche", coingecko: "avalanche-2",
@@ -425,7 +470,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Benqi (sAVAX)",   apy: 10.5, apyDisplay: "9–12%",  risk: 3 },
         },
         best: "liquid-staking",
-        note: "Benqi's sAVAX auto-compounds staking rewards and can be used as collateral in DeFi.",
+        note: "Benqi's sAVAX auto-compounds staking rewards and can be used as collateral in DeFi. Worst case: Benqi smart contract exploit or sAVAX depeg = partial or full loss of staked AVAX. Historical: Benqi has had no major exploits as of April 2026. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "OKX",     url: AFFILIATE["OKX"] },
+        ],
       },
       LINK: {
         name: "Chainlink", coingecko: "chainlink",
@@ -436,18 +485,26 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Aave supply",  apy: 3,   apyDisplay: "2–4%", risk: 2 },
         },
         best: "native-staking",
-        note: "Chainlink's native staking v0.2 is the safest yield source; Aave supply rates are variable.",
+        note: "Chainlink's native staking v0.2 is the safest yield source; Aave supply rates are variable. Worst case: Aave liquidity crisis = temporary inability to withdraw; Chainlink staking worst case: slashing if node misbehaves. Historical Aave incidents: 0 major hacks on mainnet. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "Bybit",   url: AFFILIATE["Bybit"] },
+        ],
       },
       SUI: {
         name: "Sui", coingecko: "sui",
         strategies: {
-          "not-staking":      { label: "Not staking",   apy: 0,   apyDisplay: "0%",   risk: 1 },
-          "native-staking":   { label: "Native staking",apy: 3,   apyDisplay: "3%",   risk: 2 },
-          "liquid-staking":   { label: "DeFi strategies",apy: 6.5, apyDisplay: "5–8%",risk: 4 },
-          "defi-lp":          { label: "DeFi strategies",apy: 6.5, apyDisplay: "5–8%",risk: 4 },
+          "not-staking":      { label: "Not staking",      apy: 0,   apyDisplay: "0%",   risk: 1 },
+          "native-staking":   { label: "Native staking",   apy: 3,   apyDisplay: "3%",   risk: 2 },
+          "liquid-staking":   { label: "DeFi strategies",  apy: 6.5, apyDisplay: "5–8%", risk: 4 },
+          "defi-lp":          { label: "DeFi strategies",  apy: 6.5, apyDisplay: "5–8%", risk: 4 },
         },
         best: "defi-lp",
-        note: "Sui DeFi is rapidly maturing; Cetus and Turbos offer higher yields with liquidity provider risk.",
+        note: "Sui DeFi is rapidly maturing; Cetus and Turbos offer higher yields with liquidity provider risk. Worst case: Cetus or Turbos protocol hack = up to 100% loss of LP funds. Sui DeFi is relatively young with limited track record. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Bybit", url: AFFILIATE["Bybit"] },
+          { name: "OKX",   url: AFFILIATE["OKX"] },
+        ],
       },
       RAY: {
         name: "Raydium", coingecko: "raydium",
@@ -458,7 +515,86 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           "defi-lp":          { label: "Raydium LP",    apy: 22.5, apyDisplay: "15–30%", risk: 5 },
         },
         best: "defi-lp",
-        note: "Raydium LPs earn trading fees + RAY incentives but carry high impermanent loss risk in volatile markets.",
+        note: "Raydium LPs earn trading fees + RAY incentives but carry high impermanent loss risk in volatile markets. Worst case: RAY price crash + impermanent loss = 70–90% real-value loss of LP position. Historical: Raydium had a $2M exploit in December 2022. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Bybit", url: AFFILIATE["Bybit"] },
+          { name: "OKX",   url: AFFILIATE["OKX"] },
+        ],
+      },
+      ATOM: {
+        name: "Cosmos", coingecko: "cosmos",
+        strategies: {
+          "not-staking":      { label: "Not staking",          apy: 0,    apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "Native staking",       apy: 17.5, apyDisplay: "15–20%", risk: 2 },
+          "liquid-staking":   { label: "Stride (stATOM)",      apy: 18.5, apyDisplay: "16–21%", risk: 3 },
+          "defi-lp":          { label: "Stride (stATOM)",      apy: 18.5, apyDisplay: "16–21%", risk: 3 },
+        },
+        best: "liquid-staking",
+        note: "Stride's stATOM earns staking rewards while staying liquid across the Cosmos IBC ecosystem. Worst case: IBC bridge exploit or Stride protocol hack = up to 100% loss of stATOM. Stride has had no major exploits as of April 2026. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "OKX",     url: AFFILIATE["OKX"] },
+        ],
+      },
+      MATIC: {
+        name: "Polygon (POL)", coingecko: "matic-network",
+        strategies: {
+          "not-staking":      { label: "Not staking",    apy: 0,   apyDisplay: "0%",   risk: 1 },
+          "native-staking":   { label: "Native staking", apy: 4,   apyDisplay: "4%",   risk: 2 },
+          "liquid-staking":   { label: "Aave supply",    apy: 3.5, apyDisplay: "2–5%", risk: 2 },
+          "defi-lp":          { label: "Aave supply",    apy: 3.5, apyDisplay: "2–5%", risk: 2 },
+        },
+        best: "native-staking",
+        note: "MATIC/POL native staking via Polygon validators is simple and low-risk; Aave supply rates are variable. Worst case: Polygon validator slashing or Aave liquidity crunch = partial loss or withdrawal delays. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "Bybit",   url: AFFILIATE["Bybit"] },
+        ],
+      },
+      NEAR: {
+        name: "NEAR Protocol", coingecko: "near",
+        strategies: {
+          "not-staking":      { label: "Not staking",    apy: 0,    apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "Native staking", apy: 9,    apyDisplay: "9%",     risk: 2 },
+          "liquid-staking":   { label: "NEAR DeFi",      apy: 15,   apyDisplay: "12–18%", risk: 4 },
+          "defi-lp":          { label: "NEAR DeFi",      apy: 15,   apyDisplay: "12–18%", risk: 4 },
+        },
+        best: "defi-lp",
+        note: "NEAR native staking is straightforward via the NEAR wallet; DeFi yields via Ref Finance and others. Worst case: DeFi protocol hack = up to 100% loss of DeFi position. NEAR DeFi ecosystem is still maturing. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "OKX",     url: AFFILIATE["OKX"] },
+        ],
+      },
+      FTM: {
+        name: "Fantom / Sonic (S)", coingecko: "fantom",
+        strategies: {
+          "not-staking":      { label: "Not staking",    apy: 0,    apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "Native staking", apy: 4,    apyDisplay: "4%",     risk: 2 },
+          "liquid-staking":   { label: "SpookySwap LP",  apy: 15,   apyDisplay: "10–20%", risk: 4 },
+          "defi-lp":          { label: "SpookySwap LP",  apy: 15,   apyDisplay: "10–20%", risk: 4 },
+        },
+        best: "defi-lp",
+        note: "SpookySwap LPs earn trading fees + BOO incentives on Sonic (formerly Fantom); high IL risk in volatile pairs. Worst case: SpookySwap exploit or FTM price crash = 50–90% real-value loss of LP. Fantom DeFi has had multiple historical hacks. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Bybit", url: AFFILIATE["Bybit"] },
+          { name: "OKX",   url: AFFILIATE["OKX"] },
+        ],
+      },
+      APT: {
+        name: "Aptos", coingecko: "aptos",
+        strategies: {
+          "not-staking":      { label: "Not staking",    apy: 0,    apyDisplay: "0%",     risk: 1 },
+          "native-staking":   { label: "Native staking", apy: 7,    apyDisplay: "7%",     risk: 2 },
+          "liquid-staking":   { label: "Aptos DeFi",     apy: 12.5, apyDisplay: "10–15%", risk: 4 },
+          "defi-lp":          { label: "Aptos DeFi",     apy: 12.5, apyDisplay: "10–15%", risk: 4 },
+        },
+        best: "defi-lp",
+        note: "Aptos native staking is low-risk via the official wallet; DeFi via Thala and Liquidswap offers higher yields. Worst case: DeFi protocol exploit = up to 100% loss of DeFi position. Aptos DeFi is still early-stage. <a href='https://passiveyieldlab.com/blog/best-crypto-passive-income-strategies-2026' target='_blank' rel='noopener'>Step-by-step guide →</a>",
+        affiliates: [
+          { name: "Binance", url: AFFILIATE["Binance"] },
+          { name: "Bybit",   url: AFFILIATE["Bybit"] },
+        ],
       },
     };
 
@@ -497,7 +633,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
 
     function addRow(coin = '', amount = '', strategy = 'not-staking') {
-      if (rowCount >= 10) return;
+      if (rowCount >= 15) return;
       const id = ++rowCount;
       const defaultCoin = coin || COINS[(id - 1) % COINS.length];
       const row = document.createElement('div');
@@ -517,7 +653,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           ${id === 1 ? '<label>Current Strategy</label>' : ''}
           <select class="sel-strategy">${strategyOptions(strategy)}</select>
         </div>
-        <button class="remove-btn" type="button" title="Remove" style="${id === 1 ? 'margin-top:22px' : ''}">✕</button>
+        <button class="remove-btn" type="button" title="Remove" style="${id === 1 ? 'margin-top:22px' : ''}">&#x2715;</button>
       `;
       row.querySelector('.remove-btn').addEventListener('click', () => {
         row.remove();
@@ -530,11 +666,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     function updateAddButton() {
       const rows = document.querySelectorAll('.coin-row').length;
       const btn = document.getElementById('btn-add-coin');
-      btn.style.display = rows >= 10 ? 'none' : 'flex';
+      btn.style.display = rows >= 15 ? 'none' : 'flex';
     }
 
     document.getElementById('btn-add-coin').addEventListener('click', () => addRow());
-    addRow(); // start with one row
+
+    // Issue 5: Load from localStorage on page load
+    (function initRows() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('cyg-portfolio') || '[]');
+        if (saved.length > 0) {
+          saved.forEach(h => addRow(h.coin, h.amount, h.strategy));
+        } else {
+          addRow();
+        }
+      } catch (e) {
+        addRow();
+      }
+    })();
 
     // =============================================
     //  OPTIMIZE
@@ -558,6 +707,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         return;
       }
 
+      // Issue 5: Save to localStorage
+      try {
+        localStorage.setItem('cyg-portfolio', JSON.stringify(holdings));
+      } catch (e) { /* storage unavailable */ }
+
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>Fetching live prices…';
 
@@ -576,7 +730,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         }
       } catch (e) {
         // Fallback prices (rough estimates — shown with disclaimer)
-        prices = { BTC:97000, ETH:3400, SOL:185, ADA:0.85, DOT:9.5, BNB:680, AVAX:38, LINK:18, SUI:3.8, RAY:2.8 };
+        prices = { BTC:97000, ETH:3400, SOL:185, ADA:0.85, DOT:9.5, BNB:680, AVAX:38, LINK:18, SUI:3.8, RAY:2.8, ATOM:8, MATIC:0.55, NEAR:5, FTM:0.65, APT:7 };
         errEl.textContent = '⚠ Could not fetch live prices — using approximate values. Refresh to retry.';
         errEl.style.display = 'block';
       }
@@ -596,7 +750,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         const curStrat    = yieldInfo.strategies[h.strategy];
         const bestStratKey= yieldInfo.best;
         const bestStrat   = yieldInfo.strategies[bestStratKey];
-
         const curAnnual   = usdValue * (curStrat.apy  / 100);
         const bestAnnual  = usdValue * (bestStrat.apy / 100);
         const extra       = bestAnnual - curAnnual;
@@ -607,6 +760,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         const isAlreadyBest = h.strategy === bestStratKey;
         const badgeClass    = isAlreadyBest ? 'optimized' : 'upgrade';
         const badgeText     = isAlreadyBest ? 'Already optimized' : 'Upgrade available';
+
+        // Issue 6: Build affiliate buttons
+        const affiliateHTML = (yieldInfo.affiliates || []).map(a =>
+          `<a class="btn-affiliate" href="${a.url}" target="_blank" rel="noopener sponsored">Get started with ${a.name} →</a>`
+        ).join('');
 
         const card = document.createElement('div');
         card.className = 'coin-result';
@@ -626,7 +784,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <div class="cr-box">
               <div class="cr-box-label">Recommended</div>
               <div class="cr-strategy">${bestStrat.label}</div>
-              <div class="cr-apy optimized">${bestStrat.apyDisplay} APY</div>
+              <div class="cr-apy optimized">${bestStrat.apyDisplay} APY <span class="apy-updated">Last updated: April 2026</span></div>
               <div class="cr-annual">${fmt(bestAnnual)}/year</div>
             </div>
           </div>
@@ -639,6 +797,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <div class="cr-risk">Risk: <span>${riskStars(bestStrat.risk)}</span> (${bestStrat.risk}/5)</div>
             <div class="cr-note">${yieldInfo.note}</div>
           </div>
+          <div class="cr-disclaimer">Yields are approximate and fluctuate daily. Not financial advice — always verify current rates before investing.</div>
+          ${affiliateHTML ? `<div class="cr-affiliate">${affiliateHTML}</div>` : ''}
         `;
         coinResultsEl.appendChild(card);
       }
